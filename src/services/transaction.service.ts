@@ -7,12 +7,13 @@ import {
 } from "@bsv/sdk";
 import {
   SignatureRequest,
-  HashWithIndex
+  HashWithIndex,
+  TransferOptions
 } from "../config/types.js";
 import { FireblocksService } from "./fireblocks.service.js";
 import { createDERSignature } from "../utils/crypto.utils.js";
 import { Logger } from "../utils/logger.js";
-import { MNEEUtxo } from "mnee";
+import { MNEEUtxo } from "@mnee/ts-sdk";
 
 /**
  * Service for handling BSV transaction operations
@@ -137,7 +138,8 @@ export class TransactionService {
     sigRequests: SignatureRequest[],
     destination: string,
     vaultAccountId: string,  // Add vaultAccountId parameter
-    amount?: number
+    amount?: number,
+    options: TransferOptions = {}
   ): Promise<Array<{ inputIndex: number; sig: string; pubKey: string }>> {
     try {
       this.logger.info(`Getting signatures for ${sigRequests.length} inputs from vault ${vaultAccountId}`);
@@ -170,7 +172,8 @@ export class TransactionService {
         hashesWithIndices,
         amount || 0,  // Use provided amount or default to 0
         destination,
-        vaultAccountId  // Pass the vault account ID
+        vaultAccountId,  // Pass the vault account ID
+        options
       );
 
       // Process each signature and create DER format
